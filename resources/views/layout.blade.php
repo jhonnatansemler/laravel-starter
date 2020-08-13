@@ -8,6 +8,17 @@
     <script src="https://kit.fontawesome.com/a74f2715fd.js" crossorigin="anonymous"></script>
 </head>
 <body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light d-flex justify-content-between">
+        <a class="navbar-brand" href="{{ route('series_home') }}">Series</a>
+        @auth
+            <a href="/exit" class="text-danger">Sair</a>
+        @endauth
+        @guest
+            <a href="/authentication">Entrar</a>
+        @endguest
+    </nav>
+
     <div class="container">
         <div class="jumbotron">
             <h1>@yield('cabecalho')</h1>

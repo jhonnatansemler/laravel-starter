@@ -6,32 +6,84 @@
 
 @section('conteudo')
 
-    @if (!empty($mensagem))
-        <div class="alert alert-success">
-            {{ $mensagem }}
-        </div>
-    @endif
+    @include('mensagem', ['errors' => $errors])
 
     <div class="form-group">
-        <a href="{{ route('series_create') }}" class="btn btn-dark mb-2">
-            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M8 3.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H4a.5.5 0 0 1 0-1h3.5V4a.5.5 0 0 1 .5-.5z"/>
-            <path fill-rule="evenodd" d="M7.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0V8z"/>
-            </svg>
-            Adicionar
-        </a>
+        @auth
+            <a href="{{ route('series_create') }}" class="btn btn-dark mb-2">
+                <i class="fas fa-add"></i>
+                Adicionar
+            </a>
+        @endauth
     </div>
     <ul class="list-group">
         @foreach ($series as $serie)
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                {{ $serie->nome }}
-                <form method="POST" action="/series/remover/{{ $serie->id }}">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                </form>
+            <li class="list-group-item align-items-center">
+
+                <div id="serie-{{$serie->id}}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span id="serie-label-{{$serie->id}}" class="d-flex">{{ $serie->nome }}</span>
+                        <span class="d-flex">
+                            @auth
+                                <button class="btn btn-secondary btn-sm mr-1" onclick="toggleInput({{$serie->id}})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            @endauth
+                            <a href="/series/{{ $serie->id }}/temporadas" class="btn btn-info btn-sm mr-1"><i class="fas fa-external-link-alt"></i></a>
+                            @auth
+                                <form method="POST" action="/series/remover/{{ $serie->id }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                </form>
+                            @endauth
+                        <span>
+                    </div>
+                </div>
+
+                <div hidden class="input-group" id="input-serie-{{$serie->id}}">
+                    <input type="text" class="form-control" value="{{ $serie->nome }}" name="" id="">
+                    <button onclick="toggleInput({{$serie->id}})" class="btn btn-secondary ml-1"><i class="fas fa-undo"></i></button>
+                    <button onclick="editSerie({{$serie->id}})" class="btn btn-success ml-1"><i class="fas fa-check"></i></button>
+                </div>
             </li>
         @endforeach
     </ul>
+
+    <script>
+        function toggleInput(id) {
+            const labelContainer = document.getElementById(`serie-${id}`);
+            const inputContainer = document.getElementById(`input-serie-${id}`);
+            const input = document.querySelector(`#input-serie-${id} > input`);
+            if(labelContainer.hasAttribute('hidden')){
+                labelContainer.removeAttribute('hidden');
+                inputContainer.hidden = true;
+            }else{
+                inputContainer.removeAttribute('hidden');
+                labelContainer.hidden = true;
+                input.select();
+            }
+        }
+
+        function editSerie(id) {
+            let formData = new FormData();
+
+            const name = document.querySelector(`#input-serie-${id} > input`).value;
+            const url = `/series/${id}/editName`;
+            const token = document.querySelector('input[name="_token"]').value;
+
+
+            formData.append('name', name);
+            formData.append('_token', token);
+
+            fetch(url, {
+                body: formData,
+                method: 'POST'
+            }).then(() => {
+                toggleInput(id);
+                document.getElementById(`serie-label-${id}`).textContent = name;
+            });
+        }
+    </script>
 @endsection
 

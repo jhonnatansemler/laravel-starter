@@ -17,12 +17,24 @@
 
     <form method="post">
         @csrf
-        <div class="form-group">
-            <label for="nome">Série</label>
-            <input type="text" class="form-control" name="nome" id="nome" />
+        <div class="row">
+            <div class="col col-8">
+                <label for="nome">Série</label>
+                <input type="text" class="form-control" name="nome" id="nome" />
+            </div>
+            <div class="col col-2">
+                <label for="temporadas">Nº temporadas</label>
+                <input type="number" class="form-control" name="temporadas" id="temporadas" />
+            </div>
+            <div class="col col-2">
+                <label for="episodios">Eposódios</label>
+                <input type="number" class="form-control" name="episodios" id="episodios" />
+            </div>
         </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        <div class="row mt-2">
+            <div class="col col-12">
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
         </div>
     </form>
 @endsection
